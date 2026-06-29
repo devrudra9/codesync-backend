@@ -3,14 +3,15 @@ spring:
     name: codesync-backend
 
   datasource:
-    url: jdbc:mysql://localhost:3306/codesync
-    username: root
-    password: your_password
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
