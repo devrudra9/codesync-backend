@@ -22,7 +22,7 @@ server:
 #  echo -n "my-super-secret-key-that-is-long-enough-32chars" | base64
 app:
   jwt:
-    secret: bXktc3VwZXItc2VjcmV0LWtleS10aGF0LWlzLWxvbmctZW5vdWdoLTMyY2hhcnMNCg==
+    secret: ${JWT_SECRET}
     expiration-ms: 86400000
 
 
