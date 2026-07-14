@@ -19,10 +19,9 @@ spring:
 server:
   port: ${PORT:8080}
 
-#  echo -n "my-super-secret-key-that-is-long-enough-32chars" | base64
 app:
   jwt:
-    secret: ${JWT_SECRET}
-    expiration-ms: 86400000
+    secret: ${JWT_SECRET}  # echo -n "my-super-secret-key-that-is-long-enough-32chars" | base64
+    expiration-ms: 86400000  # (1 day expiry time) : will implement refresh token in later phases of project
 
 
