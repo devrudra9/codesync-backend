@@ -25,6 +25,8 @@ app:
     expiration-ms: 86400000  # (1 day expiry time) : will implement refresh token in later phases of project
 
   cors:
-    allowed-origins:
-      http://localhost:4200,https://codesync-workspace.vercel.app
+    allowed-origins: > #  (https://*.vercel.app) keep till develop only to use setAllowedOriginPatterns instead of setAllowedOrigins
+      http://localhost:4200,
+      https://codesync-workspace.vercel.app,
+      https://*.vercel.app  
 
