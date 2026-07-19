@@ -57,4 +57,11 @@ public class ProjectController {
         return ResponseEntity.ok(
                 ApiResponse.success("Project deleted successfully", null));
     }
+
+    @GetMapping("/public")
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getPublicProjects() {
+        List<ProjectResponse> response = projectService.getPublicProjects();
+        return ResponseEntity.ok(
+                ApiResponse.success("Public Projects fetched successfully", response));
+    }
 }

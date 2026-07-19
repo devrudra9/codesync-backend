@@ -6,7 +6,7 @@ import org.rudreshwar.codesync.project.dto.CreateProjectRequest;
 import org.rudreshwar.codesync.project.dto.ProjectResponse;
 import org.rudreshwar.codesync.project.dto.UpdateProjectRequest;
 import org.rudreshwar.codesync.project.entity.Project;
-import org.rudreshwar.codesync.project.entity.Visibility;
+import org.rudreshwar.codesync.project.entity.ProjectVisibility;
 import org.rudreshwar.codesync.project.mapper.ProjectMapper;
 import org.rudreshwar.codesync.project.repository.ProjectRepository;
 import org.rudreshwar.codesync.user.entity.User;
@@ -33,7 +33,7 @@ public class ProjectService {
                 .name(request.getName())
                 .description(request.getDescription())
                 .primaryLanguage(request.getPrimaryLanguage())
-                .visibility(Visibility.PRIVATE)
+                .visibility(request.getVisibility() != null ? request.getVisibility() : ProjectVisibility.PRIVATE)
                 .archived(false)
                 .owner(owner)
                 .createdAt(LocalDateTime.now())
@@ -78,11 +78,23 @@ public class ProjectService {
                 .findByIdAndOwner(id, owner)
                 .orElseThrow(() -> new ResourceNotFoundException("Project", "id", id));
 
-        project.setName(request.getName());
-        project.setDescription(request.getDescription());
-        project.setPrimaryLanguage(request.getPrimaryLanguage());
-        project.setUpdatedAt(LocalDateTime.now());
+        if (request.getName() != null) {
+            project.setName(request.getName());
+        }
 
+        if (request.getDescription() != null) {
+            project.setDescription(request.getDescription());
+        }
+
+        if (request.getPrimaryLanguage() != null) {
+            project.setPrimaryLanguage(request.getPrimaryLanguage());
+        }
+
+        if (request.getVisibility() != null) {
+            project.setVisibility(request.getVisibility());
+        }
+
+        project.setUpdatedAt(LocalDateTime.now());
         projectRepository.save(project);
 
         return projectMapper.toResponse(project);
@@ -98,6 +110,14 @@ public class ProjectService {
                 .orElseThrow(() -> new ResourceNotFoundException("Project", "id", id));
 
         projectRepository.delete(project);
+    }
+
+    public List<ProjectResponse> getPublicProjects() {
+        return projectRepository
+                .findByVisibilityOrderByCreatedAtDesc(ProjectVisibility.PUBLIC)
+                .stream()
+                .map(projectMapper::toResponse)
+                .toList();
     }
 
 }

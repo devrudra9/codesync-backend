@@ -14,7 +14,8 @@ public class ProjectMapper {
                 .name(project.getName())
                 .description(project.getDescription())
                 .primaryLanguage(project.getPrimaryLanguage())
-                .visibility(project.getVisibility().name())
+                .ownerUsername(project.getOwner().getUsername())
+                .visibility(project.getVisibility())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
                 .build();

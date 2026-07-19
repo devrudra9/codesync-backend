@@ -27,7 +27,7 @@ public class Project {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Visibility visibility;
+    private ProjectVisibility visibility;
 
     @Column(name = "primary_language", length = 50)
     private String primaryLanguage;
