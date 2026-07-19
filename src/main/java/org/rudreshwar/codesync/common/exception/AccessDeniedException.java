@@ -1,4 +1,4 @@
-package org.rudreshwar.codesync.exception;
+package org.rudreshwar.codesync.common.exception;
 
 
 import org.springframework.http.HttpStatus;

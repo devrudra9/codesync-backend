@@ -1,4 +1,4 @@
-package org.rudreshwar.codesync.dto.response;
+package org.rudreshwar.codesync.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
-package org.rudreshwar.codesync.repository;
+package org.rudreshwar.codesync.user.repository;
 
-import org.rudreshwar.codesync.model.User;
+import org.rudreshwar.codesync.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
