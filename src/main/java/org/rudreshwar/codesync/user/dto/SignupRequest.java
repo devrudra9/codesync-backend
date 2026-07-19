@@ -1,4 +1,4 @@
-package org.rudreshwar.codesync.dto.request;
+package org.rudreshwar.codesync.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

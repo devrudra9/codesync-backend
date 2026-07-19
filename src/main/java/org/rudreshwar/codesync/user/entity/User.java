@@ -1,4 +1,5 @@
-package org.rudreshwar.codesync.model;
+package org.rudreshwar.codesync.user.entity;
+import org.rudreshwar.codesync.project.entity.Project;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -7,6 +8,8 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
@@ -52,8 +55,7 @@ public class User {
 
     private LocalDateTime lastLoginAt;
 
-    public enum Role {
-        USER, ADMIN
-    }
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Project> projects = new ArrayList<>();
 
 }

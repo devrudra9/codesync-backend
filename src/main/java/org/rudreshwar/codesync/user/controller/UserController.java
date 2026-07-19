@@ -1,12 +1,12 @@
-package org.rudreshwar.codesync.controller;
+package org.rudreshwar.codesync.user.controller;
 
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.rudreshwar.codesync.dto.request.LoginRequest;
-import org.rudreshwar.codesync.dto.request.SignupRequest;
-import org.rudreshwar.codesync.dto.response.AuthResponse;
-import org.rudreshwar.codesync.service.AuthService;
+import org.rudreshwar.codesync.user.dto.LoginRequest;
+import org.rudreshwar.codesync.user.dto.SignupRequest;
+import org.rudreshwar.codesync.user.dto.AuthResponse;
+import org.rudreshwar.codesync.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class UserController {
 
-    private final AuthService authService;
+    private final UserService authService;
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {

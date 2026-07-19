@@ -1,14 +1,14 @@
-package org.rudreshwar.codesync.service;
+package org.rudreshwar.codesync.user.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.rudreshwar.codesync.dto.request.LoginRequest;
-import org.rudreshwar.codesync.dto.request.SignupRequest;
-import org.rudreshwar.codesync.dto.response.AuthResponse;
-import org.rudreshwar.codesync.exception.BadRequestException;
-import org.rudreshwar.codesync.exception.ResourceNotFoundException;
-import org.rudreshwar.codesync.model.User;
-import org.rudreshwar.codesync.repository.UserRepository;
+import org.rudreshwar.codesync.user.dto.LoginRequest;
+import org.rudreshwar.codesync.user.dto.SignupRequest;
+import org.rudreshwar.codesync.user.dto.AuthResponse;
+import org.rudreshwar.codesync.common.exception.BadRequestException;
+import org.rudreshwar.codesync.common.exception.ResourceNotFoundException;
+import org.rudreshwar.codesync.user.entity.User;
+import org.rudreshwar.codesync.user.repository.UserRepository;
 import org.rudreshwar.codesync.security.JwtTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -61,7 +61,7 @@ public class AuthService {
 
         User user = userRepository.findByUsername(loginRequest.getUsernameOrEmail())
                 .or(() -> userRepository.findByEmail(loginRequest.getUsernameOrEmail()))
-                .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "usernameOrEmail", loginRequest.getUsernameOrEmail()));
 
         user.setLastLoginAt(LocalDateTime.now());
         userRepository.save(user);
