@@ -7,6 +7,10 @@ import org.rudreshwar.codesync.project.dto.CreateProjectRequest;
 import org.rudreshwar.codesync.project.dto.ProjectResponse;
 import org.rudreshwar.codesync.project.dto.UpdateProjectRequest;
 import org.rudreshwar.codesync.project.service.ProjectService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -64,4 +68,13 @@ public class ProjectController {
         return ResponseEntity.ok(
                 ApiResponse.success("Public Projects fetched successfully", response));
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<ProjectResponse>> searchProjects(
+            @RequestParam(defaultValue = "") String q,
+            @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        return ResponseEntity.ok(projectService.searchPublicProjects(q, pageable));
+    }
+
 }

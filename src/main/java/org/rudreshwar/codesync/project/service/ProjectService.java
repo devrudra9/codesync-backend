@@ -11,6 +11,8 @@ import org.rudreshwar.codesync.project.mapper.ProjectMapper;
 import org.rudreshwar.codesync.project.repository.ProjectRepository;
 import org.rudreshwar.codesync.user.entity.User;
 import org.rudreshwar.codesync.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -118,6 +120,17 @@ public class ProjectService {
                 .stream()
                 .map(projectMapper::toResponse)
                 .toList();
+    }
+
+    public Page<ProjectResponse> searchPublicProjects(String keyword, Pageable pageable) {
+
+        return projectRepository
+                .findByVisibilityAndNameContainingIgnoreCase(
+                        ProjectVisibility.PUBLIC,
+                        keyword,
+                        pageable
+                )
+                .map(projectMapper::toResponse);
     }
 
 }
