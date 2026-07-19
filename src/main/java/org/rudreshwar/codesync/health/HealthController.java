@@ -1,4 +1,4 @@
-package org.rudreshwar.codesync.controller;
+package org.rudreshwar.codesync.health;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-public class TestController {
+public class HealthController {
 
     @GetMapping("/health")
     public String health() {
