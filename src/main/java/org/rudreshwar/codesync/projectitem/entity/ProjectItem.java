@@ -34,7 +34,6 @@ public class ProjectItem {
     @JoinColumn(name = "parent_id")
     private ProjectItem parent;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String content;
 

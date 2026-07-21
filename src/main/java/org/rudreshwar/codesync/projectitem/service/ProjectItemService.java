@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.rudreshwar.codesync.common.exception.ResourceNotFoundException;
 import org.rudreshwar.codesync.project.entity.Project;
 import org.rudreshwar.codesync.project.repository.ProjectRepository;
-import org.rudreshwar.codesync.projectitem.dto.CreateFileRequest;
-import org.rudreshwar.codesync.projectitem.dto.ProjectItemResponse;
-import org.rudreshwar.codesync.projectitem.dto.ProjectItemTreeResponse;
+import org.rudreshwar.codesync.projectitem.dto.*;
 import org.rudreshwar.codesync.projectitem.entity.FileType;
 import org.rudreshwar.codesync.projectitem.entity.ProjectItem;
 import org.rudreshwar.codesync.projectitem.mapper.ProjectItemMapper;
@@ -115,6 +113,54 @@ public class ProjectItemService {
         return roots;
     }
 
+    @Transactional
+    public ProjectItemResponse renameItem(Long projectId, Long itemId, RenameFileRequest request, String username) {
+        Project project = getOwnedProject(projectId, username);
+
+        ProjectItem item = projectItemRepository
+                .findByIdAndProject(itemId, project)
+                .orElseThrow(() -> new ResourceNotFoundException("Project Item", "id", itemId));
+
+        if (projectItemRepository.existsByProjectAndParentAndName(project, item.getParent(), request.getName())) {
+            throw new IllegalArgumentException("An item with this name already exists.");
+        }
+
+        item.setName(request.getName());
+        item.setUpdatedAt(LocalDateTime.now());
+        projectItemRepository.save(item);
+
+        return mapper.toResponse(item);
+    }
+
+    @Transactional
+    public ProjectItemResponse updateContent(Long projectId, Long itemId, UpdateFileContentRequest request, String username) {
+        Project project = getOwnedProject(projectId, username);
+
+        ProjectItem item = projectItemRepository.findByIdAndProject(itemId, project)
+                .orElseThrow(() -> new ResourceNotFoundException("Project Item","id", itemId));
+
+        if (item.getType() != FileType.FILE) {
+            throw new IllegalArgumentException("Only files can contain content.");
+        }
+
+        item.setContent(request.getContent());
+        item.setUpdatedAt(LocalDateTime.now());
+        projectItemRepository.save(item);
+
+        return mapper.toResponse(item);
+    }
+
+    @Transactional
+    public void deleteItem(Long projectId, Long itemId, String username) {
+        Project project = getOwnedProject(projectId, username);
+
+        ProjectItem item = projectItemRepository.findByIdAndProject(itemId, project)
+                .orElseThrow(() -> new ResourceNotFoundException("Project Item", "id", itemId));
+
+        deleteRecursively(item);
+    }
+
+
 
     private Project getOwnedProject(Long projectId, String username) {
         User owner = userRepository.findByUsername(username)
@@ -122,6 +168,17 @@ public class ProjectItemService {
 
         return projectRepository.findByIdAndOwner(projectId, owner)
                 .orElseThrow(() -> new ResourceNotFoundException("Project", "id", projectId));
+    }
+
+
+    private void deleteRecursively(ProjectItem item) {
+        List<ProjectItem> children = projectItemRepository.findByParent(item);
+
+        for (ProjectItem child : children) {
+            deleteRecursively(child);
+        }
+
+        projectItemRepository.delete(item);
     }
 
 }
