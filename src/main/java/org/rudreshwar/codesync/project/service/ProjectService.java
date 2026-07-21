@@ -1,6 +1,7 @@
 package org.rudreshwar.codesync.project.service;
 
 import lombok.RequiredArgsConstructor;
+import org.rudreshwar.codesync.common.exception.BadRequestException;
 import org.rudreshwar.codesync.common.exception.ResourceNotFoundException;
 import org.rudreshwar.codesync.project.dto.CreateProjectRequest;
 import org.rudreshwar.codesync.project.dto.ProjectResponse;
@@ -14,6 +15,7 @@ import org.rudreshwar.codesync.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,6 +39,7 @@ public class ProjectService {
                 .primaryLanguage(request.getPrimaryLanguage())
                 .visibility(request.getVisibility() != null ? request.getVisibility() : ProjectVisibility.PRIVATE)
                 .archived(false)
+                .forkCount(0)
                 .owner(owner)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -123,7 +126,6 @@ public class ProjectService {
     }
 
     public Page<ProjectResponse> searchPublicProjects(String keyword, Pageable pageable) {
-
         return projectRepository
                 .findByVisibilityAndNameContainingIgnoreCase(
                         ProjectVisibility.PUBLIC,
@@ -131,6 +133,56 @@ public class ProjectService {
                         pageable
                 )
                 .map(projectMapper::toResponse);
+    }
+
+    @Transactional
+    public ProjectResponse forkProject(Long projectId, String username) {
+
+        User currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+
+        Project original = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", projectId));
+
+        if (original.getVisibility() != ProjectVisibility.PUBLIC) {
+            throw new BadRequestException("Only public projects can be forked.");
+        }
+
+        if (original.getOwner().getId().equals(currentUser.getId())) {
+            throw new BadRequestException("You cannot fork your own project.");
+        }
+
+        String baseName = original.getName();
+        String forkName = baseName + " (Copy)";
+        int copyNumber = 2;
+
+        while (projectRepository.existsByOwnerAndName(currentUser, forkName)) {
+            forkName = baseName + " (Copy " + copyNumber + ")";
+            copyNumber++;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        Project fork = Project.builder()
+                .name(forkName)
+                .description(original.getDescription())
+                .primaryLanguage(original.getPrimaryLanguage())
+                .visibility(ProjectVisibility.PRIVATE)
+                .owner(currentUser)
+                .parentProject(original)
+                .forkCount(0)
+                .archived(false)
+                .createdAt(now)
+                .updatedAt(now)
+                .lastOpenedAt(now)
+                .build();
+
+        original.setForkCount(original.getForkCount() + 1);
+
+        projectRepository.save(original);
+        projectRepository.save(fork);
+
+        return projectMapper.toResponse(fork);
     }
 
 }

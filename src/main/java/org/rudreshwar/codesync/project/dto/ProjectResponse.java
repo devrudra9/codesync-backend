@@ -18,5 +18,7 @@ public class ProjectResponse {
     private String ownerUsername;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long parentProjectId;
+    private Integer forkCount;
 
 }

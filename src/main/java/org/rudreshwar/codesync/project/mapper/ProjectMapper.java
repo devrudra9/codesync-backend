@@ -16,6 +16,8 @@ public class ProjectMapper {
                 .primaryLanguage(project.getPrimaryLanguage())
                 .ownerUsername(project.getOwner().getUsername())
                 .visibility(project.getVisibility())
+                .forkCount(project.getForkCount())
+                .parentProjectId(project.getParentProject() == null ? null : project.getParentProject().getId())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
                 .build();

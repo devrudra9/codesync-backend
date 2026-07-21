@@ -77,4 +77,11 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.searchPublicProjects(q, pageable));
     }
 
+    @PostMapping("/{id}/fork")
+    public ResponseEntity<ApiResponse<ProjectResponse>> forkProject(@PathVariable Long id, Authentication authentication) {
+        ProjectResponse response = projectService.forkProject(id, authentication.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ApiResponse.success("Project forked successfully", response));
+    }
+
 }

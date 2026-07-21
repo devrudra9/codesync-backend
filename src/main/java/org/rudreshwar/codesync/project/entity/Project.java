@@ -35,8 +35,9 @@ public class Project {
     @Column(length = 200)
     private String tags;
 
+    @Builder.Default
     @Column(nullable = false)
-    private Boolean archived;
+    private Boolean archived = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -50,5 +51,17 @@ public class Project {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_project_id")
+    private Project parentProject;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Integer forkCount = 0;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Integer starCount = 0;
 
 }
