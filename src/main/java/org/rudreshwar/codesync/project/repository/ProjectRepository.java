@@ -26,4 +26,10 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     boolean existsByOwnerAndName(User owner, String name);
 
+    Page<Project> findByVisibilityOrderByUpdatedAtDesc(ProjectVisibility visibility, Pageable pageable);
+
+    Page<Project> findByVisibilityOrderByStarCountDesc(ProjectVisibility visibility, Pageable pageable);
+
+    Page<Project> findByOwnerAndParentProjectIsNotNull(User owner, Pageable pageable);
+
 }

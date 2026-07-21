@@ -255,4 +255,25 @@ public class ProjectService {
         return projectStarRepository.existsByProjectAndUser(project, user);
     }
 
+    public Page<ProjectResponse> getRecentPublicProjects(Pageable pageable) {
+        return projectRepository
+                .findByVisibilityOrderByUpdatedAtDesc(ProjectVisibility.PUBLIC, pageable)
+                .map(projectMapper::toResponse);
+    }
+
+    public Page<ProjectResponse> getPopularProjects(Pageable pageable) {
+        return projectRepository
+                .findByVisibilityOrderByStarCountDesc(ProjectVisibility.PUBLIC, pageable)
+                .map(projectMapper::toResponse);
+    }
+
+    public Page<ProjectResponse> getMyForks(String username, Pageable pageable) {
+        User owner = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+
+        return projectRepository
+                .findByOwnerAndParentProjectIsNotNull(owner, pageable)
+                .map(projectMapper::toResponse);
+    }
+
 }

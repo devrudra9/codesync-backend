@@ -70,11 +70,12 @@ public class ProjectController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<ProjectResponse>> searchProjects(
+    public ResponseEntity<ApiResponse<Page<ProjectResponse>>> searchProjects(
             @RequestParam(defaultValue = "") String q,
             @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
-
-        return ResponseEntity.ok(projectService.searchPublicProjects(q, pageable));
+        Page<ProjectResponse> response = projectService.searchPublicProjects(q, pageable);
+        return ResponseEntity.ok(
+                ApiResponse.success("Project fetched successfully", response));
     }
 
     @PostMapping("/{id}/fork")
@@ -104,6 +105,30 @@ public class ProjectController {
         Boolean response = projectService.hasStarredProject(id, authentication.getName());
         return ResponseEntity.ok(
                 ApiResponse.success("Fetched successfully", response));
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<ApiResponse<Page<ProjectResponse>>> getRecentProjects(@PageableDefault(size = 10) Pageable pageable) {
+        Page<ProjectResponse> response = projectService.getRecentPublicProjects(pageable);
+        return ResponseEntity.ok(
+                ApiResponse.success("Recent public projects fetched successfully", response)
+        );
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<ApiResponse<Page<ProjectResponse>>> getPopularProjects(@PageableDefault(size = 10) Pageable pageable) {
+        Page<ProjectResponse> response = projectService.getPopularProjects(pageable);
+        return ResponseEntity.ok(
+                ApiResponse.success("Popular projects fetched successfully", response)
+        );
+    }
+
+    @GetMapping("/forks")
+    public ResponseEntity<ApiResponse<Page<ProjectResponse>>> getMyForks(Authentication authentication, Pageable pageable) {
+        Page<ProjectResponse> response = projectService.getMyForks(authentication.getName(), pageable);
+        return ResponseEntity.ok(
+                ApiResponse.success("Forked projects fetched successfully", response)
+        );
     }
 
 }
