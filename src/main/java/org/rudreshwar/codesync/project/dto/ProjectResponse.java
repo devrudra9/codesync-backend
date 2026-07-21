@@ -2,6 +2,7 @@ package org.rudreshwar.codesync.project.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import org.rudreshwar.codesync.project.entity.ProjectVisibility;
 
 import java.time.LocalDateTime;
 
@@ -13,8 +14,12 @@ public class ProjectResponse {
     private String name;
     private String description;
     private String primaryLanguage;
-    private String visibility;
+    private ProjectVisibility visibility;
+    private String ownerUsername;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long parentProjectId;
+    private Integer forkCount;
+    private Integer starCount;
 
 }

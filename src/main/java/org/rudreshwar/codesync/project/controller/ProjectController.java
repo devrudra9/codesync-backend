@@ -7,6 +7,10 @@ import org.rudreshwar.codesync.project.dto.CreateProjectRequest;
 import org.rudreshwar.codesync.project.dto.ProjectResponse;
 import org.rudreshwar.codesync.project.dto.UpdateProjectRequest;
 import org.rudreshwar.codesync.project.service.ProjectService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -57,4 +61,74 @@ public class ProjectController {
         return ResponseEntity.ok(
                 ApiResponse.success("Project deleted successfully", null));
     }
+
+    @GetMapping("/public")
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getPublicProjects() {
+        List<ProjectResponse> response = projectService.getPublicProjects();
+        return ResponseEntity.ok(
+                ApiResponse.success("Public Projects fetched successfully", response));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<Page<ProjectResponse>>> searchProjects(
+            @RequestParam(defaultValue = "") String q,
+            @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<ProjectResponse> response = projectService.searchPublicProjects(q, pageable);
+        return ResponseEntity.ok(
+                ApiResponse.success("Project fetched successfully", response));
+    }
+
+    @PostMapping("/{id}/fork")
+    public ResponseEntity<ApiResponse<ProjectResponse>> forkProject(@PathVariable Long id, Authentication authentication) {
+        ProjectResponse response = projectService.forkProject(id, authentication.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ApiResponse.success("Project forked successfully", response));
+    }
+
+    @PostMapping("/{id}/star")
+    public ResponseEntity<ApiResponse<Integer>> starProject(@PathVariable Long id, Authentication authentication) {
+        Integer startCount = projectService.starProject(id, authentication.getName());
+        return ResponseEntity.ok(
+                ApiResponse.success("Project starred successfully", startCount));
+    }
+
+    @DeleteMapping("/{id}/star")
+    public ResponseEntity<ApiResponse<Integer>> unstarProject(@PathVariable Long id, Authentication authentication) {
+        Integer starCount = projectService.unstarProject(id, authentication.getName());
+        return ResponseEntity.ok(
+                ApiResponse.success("Project unstarred successfully", starCount)
+        );
+    }
+
+    @GetMapping("/{id}/starred")
+    public ResponseEntity<ApiResponse<Boolean>> hasStarredProject(@PathVariable Long id, Authentication authentication) {
+        Boolean response = projectService.hasStarredProject(id, authentication.getName());
+        return ResponseEntity.ok(
+                ApiResponse.success("Fetched successfully", response));
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<ApiResponse<Page<ProjectResponse>>> getRecentProjects(@PageableDefault(size = 10) Pageable pageable) {
+        Page<ProjectResponse> response = projectService.getRecentPublicProjects(pageable);
+        return ResponseEntity.ok(
+                ApiResponse.success("Recent public projects fetched successfully", response)
+        );
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<ApiResponse<Page<ProjectResponse>>> getPopularProjects(@PageableDefault(size = 10) Pageable pageable) {
+        Page<ProjectResponse> response = projectService.getPopularProjects(pageable);
+        return ResponseEntity.ok(
+                ApiResponse.success("Popular projects fetched successfully", response)
+        );
+    }
+
+    @GetMapping("/forks")
+    public ResponseEntity<ApiResponse<Page<ProjectResponse>>> getMyForks(Authentication authentication, Pageable pageable) {
+        Page<ProjectResponse> response = projectService.getMyForks(authentication.getName(), pageable);
+        return ResponseEntity.ok(
+                ApiResponse.success("Forked projects fetched successfully", response)
+        );
+    }
+
 }

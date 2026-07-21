@@ -1,6 +1,6 @@
 package org.rudreshwar.codesync.project.entity;
 
-public enum Visibility {
+public enum ProjectVisibility {
     PRIVATE,
     PUBLIC
 }
