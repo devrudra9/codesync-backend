@@ -7,9 +7,11 @@ import org.rudreshwar.codesync.project.dto.CreateProjectRequest;
 import org.rudreshwar.codesync.project.dto.ProjectResponse;
 import org.rudreshwar.codesync.project.dto.UpdateProjectRequest;
 import org.rudreshwar.codesync.project.entity.Project;
+import org.rudreshwar.codesync.project.entity.ProjectStar;
 import org.rudreshwar.codesync.project.entity.ProjectVisibility;
 import org.rudreshwar.codesync.project.mapper.ProjectMapper;
 import org.rudreshwar.codesync.project.repository.ProjectRepository;
+import org.rudreshwar.codesync.project.repository.ProjectStarRepository;
 import org.rudreshwar.codesync.user.entity.User;
 import org.rudreshwar.codesync.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
@@ -27,6 +29,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final ProjectMapper projectMapper;
+    private final ProjectStarRepository  projectStarRepository;
 
     public ProjectResponse createProject(CreateProjectRequest request, String username) {
 
@@ -183,6 +186,73 @@ public class ProjectService {
         projectRepository.save(fork);
 
         return projectMapper.toResponse(fork);
+    }
+
+    @Transactional
+    public Integer starProject(Long projectId, String username) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", projectId));
+
+        if (project.getVisibility() != ProjectVisibility.PUBLIC) {
+            throw new IllegalArgumentException("Only public projects can be starred.");
+        }
+
+        if (projectStarRepository.existsByProjectAndUser(project, user)) {
+            throw new IllegalArgumentException("Project already starred.");
+        }
+
+        ProjectStar star = ProjectStar.builder()
+                .project(project)
+                .user(user)
+                .starredAt(LocalDateTime.now())
+                .build();
+
+        projectStarRepository.save(star);
+
+        project.setStarCount(project.getStarCount() + 1);
+        projectRepository.save(project);
+
+        return project.getStarCount();
+    }
+
+    @Transactional
+    public Integer unstarProject(Long projectId, String username) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", projectId));
+
+        ProjectStar star = projectStarRepository
+                .findByProjectAndUser(project, user)
+                .orElseThrow(() -> new ResourceNotFoundException("Star not found.", "id", projectId));
+
+        projectStarRepository.delete(star);
+
+        if (project.getStarCount() > 0) {
+            project.setStarCount(project.getStarCount() - 1);
+        }
+
+        projectRepository.save(project);
+
+        return project.getStarCount();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean hasStarredProject(Long projectId, String username) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", projectId));
+
+        return projectStarRepository.existsByProjectAndUser(project, user);
     }
 
 }

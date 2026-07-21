@@ -84,4 +84,26 @@ public class ProjectController {
                 ApiResponse.success("Project forked successfully", response));
     }
 
+    @PostMapping("/{id}/star")
+    public ResponseEntity<ApiResponse<Integer>> starProject(@PathVariable Long id, Authentication authentication) {
+        Integer startCount = projectService.starProject(id, authentication.getName());
+        return ResponseEntity.ok(
+                ApiResponse.success("Project starred successfully", startCount));
+    }
+
+    @DeleteMapping("/{id}/star")
+    public ResponseEntity<ApiResponse<Integer>> unstarProject(@PathVariable Long id, Authentication authentication) {
+        Integer starCount = projectService.unstarProject(id, authentication.getName());
+        return ResponseEntity.ok(
+                ApiResponse.success("Project unstarred successfully", starCount)
+        );
+    }
+
+    @GetMapping("/{id}/starred")
+    public ResponseEntity<ApiResponse<Boolean>> hasStarredProject(@PathVariable Long id, Authentication authentication) {
+        Boolean response = projectService.hasStarredProject(id, authentication.getName());
+        return ResponseEntity.ok(
+                ApiResponse.success("Fetched successfully", response));
+    }
+
 }

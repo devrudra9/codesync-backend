@@ -20,5 +20,6 @@ public class ProjectResponse {
     private LocalDateTime updatedAt;
     private Long parentProjectId;
     private Integer forkCount;
+    private Integer starCount;
 
 }
