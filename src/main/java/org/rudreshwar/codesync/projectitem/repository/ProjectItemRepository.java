@@ -1,6 +1,7 @@
 package org.rudreshwar.codesync.projectitem.repository;
 
 import org.rudreshwar.codesync.project.entity.Project;
+import org.rudreshwar.codesync.projectitem.entity.FileType;
 import org.rudreshwar.codesync.projectitem.entity.ProjectItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -18,4 +19,8 @@ public interface ProjectItemRepository extends JpaRepository<ProjectItem, Long> 
     Optional<ProjectItem> findByIdAndProject(Long id, Project project);
 
     boolean existsByProjectAndParentAndName(Project project, ProjectItem parent, String name);
+
+    List<ProjectItem> findByProjectAndType(Project project, FileType type);
+
+    Optional<ProjectItem> findByProjectAndName(Project project, String name);
 }
