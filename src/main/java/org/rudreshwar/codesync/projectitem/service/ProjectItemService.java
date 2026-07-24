@@ -153,13 +153,10 @@ public class ProjectItemService {
     @Transactional
     public void deleteItem(Long projectId, Long itemId, String username) {
         Project project = getOwnedProject(projectId, username);
-
         ProjectItem item = projectItemRepository.findByIdAndProject(itemId, project)
                 .orElseThrow(() -> new ResourceNotFoundException("Project Item", "id", itemId));
-
         deleteRecursively(item);
     }
-
 
 
     private Project getOwnedProject(Long projectId, String username) {
@@ -170,14 +167,11 @@ public class ProjectItemService {
                 .orElseThrow(() -> new ResourceNotFoundException("Project", "id", projectId));
     }
 
-
     private void deleteRecursively(ProjectItem item) {
         List<ProjectItem> children = projectItemRepository.findByParent(item);
-
         for (ProjectItem child : children) {
             deleteRecursively(child);
         }
-
         projectItemRepository.delete(item);
     }
 
