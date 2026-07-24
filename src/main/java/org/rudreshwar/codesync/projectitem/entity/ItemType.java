@@ -1,5 +1,5 @@
 package org.rudreshwar.codesync.projectitem.entity;
 
-public enum FileType {
+public enum ItemType {
     FILE, FOLDER
 }

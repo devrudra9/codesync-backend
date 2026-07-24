@@ -6,7 +6,7 @@ import org.rudreshwar.codesync.common.util.HashUtil;
 import org.rudreshwar.codesync.common.util.ProjectPathUtil;
 import org.rudreshwar.codesync.project.entity.Project;
 import org.rudreshwar.codesync.project.repository.ProjectRepository;
-import org.rudreshwar.codesync.projectitem.entity.FileType;
+import org.rudreshwar.codesync.projectitem.entity.ItemType;
 import org.rudreshwar.codesync.projectitem.entity.ProjectItem;
 import org.rudreshwar.codesync.projectitem.repository.ProjectItemRepository;
 import org.rudreshwar.codesync.user.entity.User;
@@ -63,7 +63,7 @@ public class CommitService {
 
         commitRepository.save(commit);
 
-        List<ProjectItem> files = projectItemRepository.findByProjectAndType(project, FileType.FILE);
+        List<ProjectItem> files = projectItemRepository.findByProjectAndType(project, ItemType.FILE);
 
         for (ProjectItem file : files) {
             CommitSnapshot snapshot = CommitSnapshot.builder()
