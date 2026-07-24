@@ -24,7 +24,7 @@ public class ProjectItem {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private FileType type;
+    private ItemType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)

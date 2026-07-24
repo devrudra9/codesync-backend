@@ -5,7 +5,7 @@ import org.rudreshwar.codesync.common.exception.ResourceNotFoundException;
 import org.rudreshwar.codesync.project.entity.Project;
 import org.rudreshwar.codesync.project.repository.ProjectRepository;
 import org.rudreshwar.codesync.projectitem.dto.*;
-import org.rudreshwar.codesync.projectitem.entity.FileType;
+import org.rudreshwar.codesync.projectitem.entity.ItemType;
 import org.rudreshwar.codesync.projectitem.entity.ProjectItem;
 import org.rudreshwar.codesync.projectitem.mapper.ProjectItemMapper;
 import org.rudreshwar.codesync.projectitem.repository.ProjectItemRepository;
@@ -50,7 +50,7 @@ public class ProjectItemService {
                                     "id",
                                     request.getParentId()));
 
-            if (parent.getType() != FileType.FOLDER) {
+            if (parent.getType() != ItemType.FOLDER) {
                 throw new IllegalArgumentException(
                         "Parent must be a folder.");
             }
@@ -68,7 +68,7 @@ public class ProjectItemService {
         ProjectItem item = ProjectItem.builder()
                 .name(request.getName())
                 .type(request.getType())
-                .content(request.getType() == FileType.FILE ? "" : null)
+                .content(request.getType() == ItemType.FILE ? "" : null)
                 .project(project)
                 .parent(parent)
                 .createdAt(LocalDateTime.now())
@@ -139,7 +139,7 @@ public class ProjectItemService {
         ProjectItem item = projectItemRepository.findByIdAndProject(itemId, project)
                 .orElseThrow(() -> new ResourceNotFoundException("Project Item","id", itemId));
 
-        if (item.getType() != FileType.FILE) {
+        if (item.getType() != ItemType.FILE) {
             throw new IllegalArgumentException("Only files can contain content.");
         }
 
