@@ -28,15 +28,12 @@ public class Execution {
     @Column(nullable = false)
     private ExecutionStatus status;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String sourceCode;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String output;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String errorOutput;
 
