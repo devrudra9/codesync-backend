@@ -22,7 +22,8 @@ server:
 app:
   jwt:
     secret: ${JWT_SECRET}  # echo -n "my-super-secret-key-that-is-long-enough-32chars" | base64
-    expiration-ms: 86400000  # (1 day expiry time) : will implement refresh token in later phases of project
+    expiration-ms: 86400000  # (1 day expiry time)
+    refresh-expiration-ms: 604800000 # 7 days for refresh tokens
 
   cors:
     allowed-origins: > #  (https://*.vercel.app) keep till develop only to use setAllowedOriginPatterns instead of setAllowedOrigins
