@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 
@@ -19,13 +20,16 @@ public class JwtTokenProvider {
 
     private final SecretKey secretKey;
     private final long jwtExpirationMs;
+    private final TokenBlacklistService tokenBlacklistService;
 
     public JwtTokenProvider(
             @Value("${app.jwt.secret}") String jwtSecret,
-            @Value("${app.jwt.expiration-ms}") long jwtExpirationMs
+            @Value("${app.jwt.expiration-ms}") long jwtExpirationMs,
+            TokenBlacklistService tokenBlacklistService
     ) {
         this.secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtSecret));
         this.jwtExpirationMs = jwtExpirationMs;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     public String generateToken(Authentication authentication) {
@@ -51,12 +55,32 @@ public class JwtTokenProvider {
         return Long.parseLong(claims.getSubject());
     }
 
+    public Date getExpirationDateFromToken(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+            return claims.getExpiration();
+        } catch (Exception ex) {
+            logger.error("Could not parse expiration from token", ex);
+            return null;
+        }
+    }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token);
+
+            // check blacklist
+            if (tokenBlacklistService != null && tokenBlacklistService.isBlacklisted(token)) {
+                logger.warn("JWT is blacklisted");
+                return false;
+            }
             return true;
         } catch (MalformedJwtException ex) {
             logger.error("Invalid JWT Token");
